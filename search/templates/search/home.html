@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nucleotide Sequence Search</title>
+</head>
+<body>
+    <h1>Nucleotide Sequence Search</h1>
+    <input id="pattern" placeholder="Enter regex pattern">
+    <input id="uid" value="30271926" placeholder="Enter UID">
+    <button onclick="sendPattern()">Submit</button>
+    <pre id="output"></pre>
+
+    <script>
+        async function sendPattern() {
+            const pattern = document.getElementById('pattern').value;
+            const uid = document.getElementById('uid').value;
+            const url = `/api/sequences/?pattern=${pattern}&uid=${uid}`
+            const res = await fetch(url, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/json'}
+            });
+
+            let response_data = await res.json();
+            let data = JSON.parse(response_data);
+
+            let outputHTML = "";
+            for (const [sequence, ranges] of Object.entries(data)) {
+                outputHTML += `<strong>${sequence}</strong><br>`;
+                
+                for (const [start, end] of ranges) {
+                    outputHTML += `&nbsp;&nbsp;${start}-${end}<br>`;
+                }
+                
+                outputHTML += `<br>`; // extra line break between sequences
+            }
+
+            document.getElementById("output").innerHTML = outputHTML;
+        }
+    </script>
+
+</body>
+</html>
