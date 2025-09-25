@@ -5,7 +5,7 @@ import re
 
 # CHUNK_SIZE = 1 * 1024      # 1KB chunks (For testing)
 CHUNK_SIZE = 1024 * 1024   # 1MB chunks
-OVERLAP_SIZE = 100         # overlap to avoid missing regex matches, need to handle duplicates
+OVERLAP_SIZE = 256         # overlap to avoid missing regex matches, need to handle duplicates
     
 def run_search(pattern_str, uid):
     found_sequence_dict = defaultdict(list)
