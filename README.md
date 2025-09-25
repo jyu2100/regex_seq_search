@@ -51,10 +51,9 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
    python manage.py runserver
 ```
 
-- Now open http://127.0.0.1:8000/ in your browser
-```
-   python manage.py runserver
-```
+- Now open http://127.0.0.1:8000/ in your browser.
+- Enter the regular expression pattern (e.g. "(AATCGA|GGCAT)") and hit the Submit button to see the result.
+
 
 ### Running with CLI
 
@@ -74,8 +73,39 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 ```
 
 ---
+## Architecture
 
-## Design and Architecture
+This project is implemented as a web application and a command line utility using **Django** and **Python** for the backend and **JavaScript** for the frontend. It follows a client-server model where the browser interacts with the server through HTTP requests.
+
+### Components
+
+- **Frontend**
+  - Implemented with JavaScript and HTML.
+  - Displays the UI and handles user interactions.
+  - Send requests to the backend using asynchronous HTTP requests (Fetch).
+  - Updates the UI dynamically based on server responses.
+
+- **Backend**
+  - Built with Django and Python.
+  - Provides API endpoint and Django HTML template.
+  - Search XML files and returns responses.
+
+- **Command Line Utility**
+  - Implemented as a custom Django management command.
+  - Provides a non-graphical interface for running the same operations as the web app.
+  - Reuses the same backend logic as the web app to avoid duplication.
+
+### Data Flow
+
+1. A user interacts with the application in the browser.
+2. The frontend JavaScript sends an HTTP request to the Django backend API.
+3. The Django backend processes the request and executes the logic to search for patterns inside XML files.
+4. Django returns a JSON response.
+5. The frontend receives the response and updates the user interface.
+
+---
+
+## Design
 - 
 
 ---
