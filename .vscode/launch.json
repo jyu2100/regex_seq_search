@@ -8,22 +8,24 @@
             "name": "Python Debugger: Django",
             "type": "debugpy",
             "request": "launch",
-            "args": [
-                "runserver"
-            ],
-            "django": true,
-            "autoStartBrowser": false,
-            "program": "${workspaceFolder}\\manage.py"
-        },
-        {
-            "name": "Python Debugger: Django",
-            "type": "debugpy",
-            "request": "launch",
             "program": "${workspaceFolder}\\manage.py",
             "args": [
                 "runserver"
             ],
             "django": true
+        },
+        {
+            "name": "Python: Django Management Command",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "run_search_cli",        // Replace with the actual name of your management command
+                "(AATCGA|GGCAT)",        // Optional: Add any arguments your command takes
+                "30271926"
+            ],
+            "django": true,
+            "justMyCode": true // Set to false if you need to step into Django/library code
         }
     ]
 }
