@@ -73,6 +73,28 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 ```
 
 ---
+## Sample Output
+
+The following is a partial output from part 1 (see the full outputs for both parts in the outputs folder). Each range (e.g., 543-547, 672-676, 1572-1576) represents the location of a found sequence within the searched data, where the first number is the start index and the second number is the end index. **Indexing is zero-based**.
+```
+GGCAT
+  543-547
+  672-676
+  1572-1576
+  1694-1698
+  2057-2061
+  3651-3655
+  4431-4435
+  6834-6838
+  ...
+  29381-29385
+
+AATCGA
+  26007-26012
+
+```
+
+---
 ## Architecture
 
 This project is implemented as a web application and a command line utility using **Django** and **Python** for the backend and **JavaScript** for the frontend. It follows a client-server model where the browser interacts with the server through HTTP requests.
@@ -106,6 +128,8 @@ This project is implemented as a web application and a command line utility usin
 ---
 
 ## Design
+
+
 - 
 
 ---
