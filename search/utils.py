@@ -59,4 +59,8 @@ def find_matches(text, pattern, offset):
         matched_str = match.group()
         span = match.span()
         location = (span[0] + offset, span[1] + offset - 1)
-        yield (matched_str, location)
+
+        # Matches end inside the overlay area are duplicates, ignores them
+        # Matches end after the overlay area are new ones
+        if location[1] >= offset + OVERLAP_SIZE:
+            yield (matched_str, location)
