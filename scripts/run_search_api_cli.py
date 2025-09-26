@@ -15,8 +15,7 @@ def main():
         # Send GET request with query parameters
         response = requests.get(
             url,
-            params={"pattern": args.pattern, "uid": args.uid},
-            timeout=10
+            params={"pattern": args.pattern, "uid": args.uid}
         )
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
