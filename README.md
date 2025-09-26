@@ -39,6 +39,8 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 ---
 
 ## Usage
+🔴 The regular expression pattern is limited to **256** characters in this project
+
 ### Running with browser
 - Activate the virtual environment from the project's root folder
 ```
@@ -128,8 +130,36 @@ This project is implemented as a web application and a command line utility usin
 ---
 
 ## Design
+The design of this project emphasizes **code reusability**, ensuring both the web app and the command line utility share the same backend code. The core backend logic focuses on reading large files that do not fit in the memory and finding patterns within the data.
 
+### Overview
 
+1. **Memory Usage**
+    - Since the data file for part 2 exceeds 200 MB, loading it entirely into memory may cause performance issues.
+    - **Design**
+        - Scan the xml file line by line.
+        - Only handle the data within the start and end tags of TSeq_sequence.
+        - Stream data (levelaging Python generator) one chunk (default to 1MB) at a time.
+2. **Finding patterns across two chunks**
+    - Regex can only find patterns within the current chunk.
+    - **Design**
+        - Have each chunk overlaps the next by a fixed size (default to 256 chars, the maximum regular expression pattern length in this project). Without overlap, matched patterns across chunks would be missed.
+3. **Handling duplicate Matches**
+    - Matches found entirely inside the overlap would appear twice.
+    - **Design**
+        - Ignore matches that end before the “new” part of the chunk. Except for the first chunk, matches found within the first OVERLAP_SIZE area of a chunk are duplicates.
+        - Matches spanning across chunk boundaries are included.
+4. **Returning absolute positions**
+    - Regex matches return the relative positions within the current chunk, not the absolute positions within the searched data.
+    - **Design**
+        - Keep track of an absolute offset for the current chunk.
+        - Convert relative positions to absolute positions inside TSeq_sequence.
+
+---
+
+## Possible Improvements
+- Expose chunk size and overlap size as configurable parameters.
+- Handle longer input pattern length.
 - 
 
 ---
