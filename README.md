@@ -56,8 +56,7 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 - Now open http://127.0.0.1:8000/ in your browser.
 - Enter the regular expression pattern (e.g. "(AATCGA|GGCAT)") and hit the Submit button to see the result.
 
-
-### Running with CLI
+### Running with CLI (Django management command version)
 
 - Activate the virtual environment from the project's root folder
 ```
@@ -72,6 +71,22 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
    For example
 
    python manage.py run_search_cli "(AATCGA|GGCAT)" "224589800"
+```
+
+### Running with CLI (standalone Python script version)
+
+- Make sure your Django server is running:
+```
+   python manage.py runserver
+```
+
+- Then, on the same computer, run:
+```
+   python scripts/run_search_api_cli.py <PATTERN> <UID>
+
+   For example
+
+   python scripts/run_search_api_cli.py "(AATCGA|GGCAT)" "30271926"
 ```
 
 ---
@@ -114,10 +129,15 @@ This project is implemented as a web application and a command line utility usin
   - Provides API endpoint and Django HTML template.
   - Search XML files and returns responses.
 
-- **Command Line Utility**
+- **Command Line Utility (Django management command version)**
   - Implemented as a custom Django management command.
   - Provides a non-graphical interface for running the same operations as the web app.
   - Reuses the same backend logic as the web app to avoid duplication.
+
+- **Command Line Utility (standalone Python script version)**
+  - Implemented as a standalone Python scipt.
+  - Provides a non-graphical interface for running the same operations as the web app.
+  - Calls Django API endpoint via HTTP GET request with query parameters.
 
 ### Data Flow
 
@@ -144,7 +164,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
     - Regex can only find patterns within the current chunk.
     - **Design**
         - Have each chunk overlaps the next by a fixed size (default to 256 chars, the maximum regular expression pattern length in this project). Without overlap, matched patterns across chunks would be missed.
-3. **Handling duplicate Matches**
+3. **Handling duplicate matches**
     - Matches found entirely inside the overlap would appear twice.
     - **Design**
         - Ignore matches that end before the “new” part of the chunk. Except for the first chunk, matches found within the first OVERLAP_SIZE area of a chunk are duplicates.
@@ -160,6 +180,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 ## Possible Improvements
 - Expose chunk size and overlap size as configurable parameters.
 - Handle longer input pattern length.
+- Secure the API with JWT (JSON Web Token) authentication
 - 
 
 ---
