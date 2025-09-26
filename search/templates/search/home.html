@@ -5,7 +5,11 @@
 </head>
 <body>
     <h1>Nucleotide Sequence Search</h1>
-    <input id="pattern" placeholder="Enter regex pattern">
+    <textarea id="pattern" rows="3" cols="90" maxlength="256" placeholder="Enter regex pattern (256 characters max)"></textarea>
+    <br>
+    <br>
+    <label>UID</label>
+    <br>
     <input id="uid" value="30271926" placeholder="Enter UID">
     <button onclick="sendPattern()">Submit</button>
     <pre id="output"></pre>
