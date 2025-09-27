@@ -12,6 +12,10 @@ def run_search(pattern_str, uid):
 
     file_name = f"sequence.fasta_{uid}.xml"
     file_path = f"{settings.BASE_DIR}/data/{file_name}"
+
+    # Compiles the regular expression pattern as it will be used multilpe times, 
+    # also assumes the pattern and searched data are all in uppercase.
+    # pattern = re.compile(pattern_str, re.IGNORECASE)
     pattern = re.compile(pattern_str)
     
     with open(file_path, "r") as f:
@@ -32,7 +36,7 @@ def stream_matches(file_obj, pattern):
 
     opening_tag = "<TSeq_sequence>"
     closing_tag = "</TSeq_sequence>"
-    tag_overlay_size = len(closing_tag)
+    tag_overlay_size = len(opening_tag)
 
     while True:
         file_chunk = file_obj.read(CHUNK_SIZE)
