@@ -30,25 +30,44 @@ def stream_matches(file_obj, pattern):
     buffer = ""
     offset = 0
 
-    for line in file_obj:
-        if "<TSeq_sequence>" in line:
-            inside_tseq_sequence = True
-            buffer += line.split("<TSeq_sequence>", 1)[1]
-        elif "</TSeq_sequence>" in line and inside_tseq_sequence:
-            buffer += line.split("</TSeq_sequence>", 1)[0]
-            yield from find_matches(buffer, pattern, offset)
-            offset += len(buffer)
-            break
-        elif inside_tseq_sequence:
-            buffer += line
-            while len(buffer) > CHUNK_SIZE:
-                chunk = buffer[:CHUNK_SIZE]
-                yield from find_matches(chunk, pattern, offset)
-                buffer = buffer[CHUNK_SIZE - OVERLAP_SIZE:]
-                offset += (len(chunk) - OVERLAP_SIZE)
+    opening_tag = "<TSeq_sequence>"
+    closing_tag = "</TSeq_sequence>"
+    tag_overlay_size = len(closing_tag)
 
-    if buffer:
-        yield from find_matches(buffer, pattern, offset)
+    while True:
+        file_chunk = file_obj.read(CHUNK_SIZE)
+        if not file_chunk:
+            break
+
+        buffer += file_chunk
+
+        if not inside_tseq_sequence:
+            # Look for opening tag
+            start_idx = buffer.find(opening_tag)
+            if start_idx == -1:
+                # keep the last tag_overlay_size part in case tag is split across chunks
+                buffer = buffer[-tag_overlay_size:]
+                continue
+
+            buffer = buffer[start_idx + len(opening_tag):]
+            inside_tseq_sequence = True
+
+        if inside_tseq_sequence:
+            # Look for closing tag
+            end_idx = buffer.find(closing_tag)
+            if end_idx == -1:
+                while len(buffer) > CHUNK_SIZE:
+                    chunk = buffer[:CHUNK_SIZE]
+                    yield from find_matches(chunk, pattern, offset)
+                    offset += CHUNK_SIZE - OVERLAP_SIZE
+                    buffer = buffer[CHUNK_SIZE - OVERLAP_SIZE:]
+
+                continue
+            else:
+                # Found closing tag
+                chunk = buffer[:end_idx]
+                yield from find_matches(chunk, pattern, offset)
+                return
 
 def find_matches(text, pattern, offset):
     """
