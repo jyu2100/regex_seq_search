@@ -158,9 +158,9 @@ The design of this project emphasizes **code reusability**, ensuring both the we
     - Since the data file for part 2 exceeds 200 MB, loading it entirely into memory may cause performance issues.
     - **Design**
         - ~~Scan the xml file line by line~~ (A very long line may still cause performance issues).
-        - Read the xml file in chunks.
+        - Read the xml file in chunks (default to 1MB).
         - Only handle the data within the opening and closing tags of TSeq_sequence.
-        - Stream data (levelaging Python generator) one chunk (default to 1MB) at a time.
+        - Stream data (levelaging Python generator) one chunk (default to 1MB) at a time for pattern matching.
 2. **Searching for <TSeq_sequence> tag split across two file chunks**
     - <TSeq_sequence> tag may be split across chunks when reading file in chunks.
     - **Design**
@@ -179,6 +179,12 @@ The design of this project emphasizes **code reusability**, ensuring both the we
     - **Design**
         - Keep track of an absolute offset for the current chunk.
         - Convert relative positions to absolute positions inside TSeq_sequence.
+
+---
+
+## Notes
+- At first, I tried reading the file line by line, thinking that would keep memory usage low since the whole file wouldn’t be loaded at once. But when I tested with a large XML file, I noticed memory usage was still pretty high. During debugging, I found that the value of the TSeq_sequence element was stored on a single line rather than being split across multiple lines. To address this, I switched to reading the file in fixed-size chunks using file.read(chunk_size), which lowered memory usage and improved processing speed.
+- 
 
 ---
 
