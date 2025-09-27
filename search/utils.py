@@ -10,8 +10,8 @@ OVERLAP_SIZE = 256         # overlap to avoid missing regex matches, need to han
 def run_search(pattern_str, uid):
     found_sequence_dict = defaultdict(list)
 
-    file_name = f'sequence.fasta_{uid}.xml'
-    file_path = f'{settings.BASE_DIR}/data/{file_name}'
+    file_name = f"sequence.fasta_{uid}.xml"
+    file_path = f"{settings.BASE_DIR}/data/{file_name}"
     pattern = re.compile(pattern_str)
     
     with open(file_path, "r") as f:
@@ -69,12 +69,12 @@ def stream_matches(file_obj, pattern):
                 yield from find_matches(chunk, pattern, offset)
                 return
 
-def find_matches(text, pattern, offset):
+def find_matches(chunk, pattern, offset):
     """
     Apply regex to a text buffer and yield all matches.
     """
     
-    for match in pattern.finditer(text):
+    for match in pattern.finditer(chunk):
         matched_str = match.group()
         span = match.span()
         location = (span[0] + offset, span[1] + offset - 1)
