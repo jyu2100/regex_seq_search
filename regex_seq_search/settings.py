@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from decouple import config
 from pathlib import Path
+from search.utils import extract_value
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,14 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-bug_v=8eihc6c_917tu9y*qx!ict_etrg)!r1c)$za_!*8(oyr'
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = extract_value(config('SECRET_KEY_PATH'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = []
+ALLOWED_HOSTS_LIST = extract_value(config('ALLOWED_HOSTS_PATH')).split(",")
+ALLOWED_HOSTS += ALLOWED_HOSTS_LIST
 
+# DB_PASSWORD = '4@6k8b9h2c2v9n0d3'
+DB_PASSWORD = extract_value(config('DB_PASSWORD_PATH'))
+
+# API_TOKEN = 'SflKxwRJSMeKKF2QT4fwpMe'
+API_TOKEN = extract_value(config('API_TOKEN_PATH'))
 
 # Application definition
 
@@ -137,7 +145,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '5/minute',
-        'anon': '2/minute',
+        'user': '10/minute',
+        'anon': '5/minute',
     }
 }

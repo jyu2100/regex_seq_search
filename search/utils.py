@@ -1,5 +1,6 @@
 from collections import defaultdict
 from django.conf import settings
+from stegano import lsb
 import json
 import re
 
@@ -87,3 +88,21 @@ def find_matches(chunk, pattern, offset):
         # Matches end after the overlay area are new ones
         if offset == 0 or location[1] >= offset + OVERLAP_SIZE:
             yield (matched_str, location)
+
+def embed_value(input_image, output_image, value):
+    """
+    Embed a string value into an image.
+    """
+    secret_image = lsb.hide(input_image, value)
+    secret_image.save(output_image)
+
+def extract_value(image):
+    """
+    Extract a string value embedded in an image.
+    """
+    revealed_str = lsb.reveal(image)
+
+    if not revealed_str:
+        return None
+
+    return revealed_str
