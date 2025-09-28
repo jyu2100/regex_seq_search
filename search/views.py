@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .utils import run_search
+import json
 
 # Front-end view
 def home(request):
@@ -17,4 +18,5 @@ class RegexSearchView(APIView):
             json_str = run_search(pattern_str, uid)
             return Response(json_str)
         except Exception as e:
-            return Response({"error": str(e)}, status=400)
+            json_str = json.dumps({"error": str(e)})
+            return Response(json_str, status=400)

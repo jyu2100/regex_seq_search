@@ -27,6 +27,12 @@
             let response_data = await res.json();
             let data = JSON.parse(response_data);
 
+            if ("error" in data) {
+                outputHTML = data["error"];                
+                document.getElementById("output").innerHTML = outputHTML;
+                return;
+            }
+
             let outputHTML = "";
             for (const [sequence, ranges] of Object.entries(data)) {
                 outputHTML += `<strong>${sequence}</strong><br>`;
