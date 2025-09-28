@@ -86,7 +86,7 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 
    For example
 
-   python scripts/run_search_api_cli.py "(AATCGA|GGCAT)" "30271926"
+   python scripts/run_search_api_cli.py "(AATCGA|GGCAT)" "224589800"
 ```
 
 ---
@@ -184,6 +184,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 
 ## Notes
 - At first, I tried reading the file line by line, thinking that would keep memory usage low since the whole file wouldn’t be loaded at once. But when I tested with a large XML file, I noticed memory usage was still pretty high. During debugging, I found that the value of the TSeq_sequence element was stored on a single line rather than being split across multiple lines. To address this, I switched to reading the file in fixed-size chunks using file.read(chunk_size), which lowered memory usage and improved processing speed.
+- It is assumed that both the input pattern and the data being searched are in uppercase. If they aren’t, then the search needs to be case‑insensitive.
 - 
 
 ---
