@@ -179,6 +179,12 @@ The design of this project emphasizes **code reusability**, ensuring both the we
     - **Design**
         - Keep track of an absolute offset for the current chunk.
         - Convert relative positions to absolute positions inside TSeq_sequence.
+6. **API Rate limiting**
+    - Use Regex to search in a large file can be a time-intensive task and could overload the web server with excessive requests.
+    - **Design**
+        - Django REST Framework’s throttling system is used to protect the API from abuse and denial-of-service attempts.
+        - This project uses DEFAULT_THROTTLE_CLASSES, which apply the throttling rules globally across all API endpoints. If needed, throttling can be adjusted to a per-view configuration.
+        - In a production environment, it is a good idea to combine Django REST Framework’s throttling with rate limiting at the web server level (e.g., NGINX). NGINX can apply IP-based rules before the requests reach the application. NGINX rate limiting also applies to any HTTP traffic, not just APIs.
 
 ---
 
