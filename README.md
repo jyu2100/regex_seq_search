@@ -25,6 +25,7 @@ Step-by-step instructions to get the project running locally:
 4. Install dependencies:
    ```
    pip install -r requirements.txt
+
 ---
 
 ## Datasets
@@ -36,6 +37,41 @@ Download the nucleotide from 224589800 NIH’s nucleotide database
 
 sequence.fasta_30271926.xml is already included in the repository, however, sequence.fasta_224589800.xml is over 200MB and could not fit in a GitHub project.
 
+---
+
+## Initial Setup
+The following commands show how the required secret image files were originally generated. These files have already been committed to the repository for demo purposes, so you **do not need to run these commands yourself** unless you want to regenerate them. However, **do not commit secret image files in real world projects**. DNA.png in the assets folder is used as the base (input) image.
+- **Embed Secrets**
+   - Use the **embed_value** management command:
+   ```
+      python manage.py embed_value <input_image> <output_image> <secret_string>
+
+      For example
+
+      python manage.py embed_value "assets/DNA.png" "assets/env1.png" "django-insecure-bug_v=8eihc6c_917tu9y*qx!ict_etrg)!r1c)$za_!*8(oyr"
+      
+      python manage.py embed_value "assets/DNA.png" "assets/env2.png" "localhost,127.0.0.1"
+
+      python manage.py embed_value "assets/DNA.png" "assets/env3.png" "4@6k8b9h2c2v9n0d3"
+
+      python manage.py embed_value "assets/DNA.png" "assets/env4.png" "SflKxwRJSMeKKF2QT4fwpMe"   
+   ```
+
+- **Verify Secrets**
+   - Use the **extract_value** management command:
+   ```
+      python manage.py extract_value <secret_image>
+
+      For example
+
+      python manage.py extract_value "assets/env1.png"
+      
+      python manage.py extract_value "assets/env2.png"
+
+      python manage.py extract_value "assets/env3.png"
+
+      python manage.py extract_value "assets/env4.png"  
+   ```
 ---
 
 ## Usage
@@ -180,17 +216,23 @@ The design of this project emphasizes **code reusability**, ensuring both the we
         - Keep track of an absolute offset for the current chunk.
         - Convert relative positions to absolute positions inside TSeq_sequence.
 6. **API Rate limiting**
-    - Use Regex to search in a large file can be a time-intensive task and could overload the web server with excessive requests.
+    - Use Regex to search in a large file can be a time-intensive task and the web server could be overloaded if there were excessive requests.
     - **Design**
         - Django REST Framework’s throttling system is used to protect the API from abuse and denial-of-service attempts.
         - This project uses DEFAULT_THROTTLE_CLASSES, which apply the throttling rules globally across all API endpoints. If needed, throttling can be adjusted to a per-view configuration.
         - In a production environment, it is a good idea to combine Django REST Framework’s throttling with rate limiting at the web server level (e.g., NGINX). NGINX can apply IP-based rules before the requests reach the application. NGINX rate limiting also applies to any HTTP traffic, not just APIs.
-
+7. **Using image-based Steganography for secret management**
+    - Sensitive configuration values were stored in plaintext settings.py within the repository or .env file.
+    - **Design**
+        - Use the Stegano Python library to hide sensitive configuration values inside PNG images.
+        - Critical settings (e.g., SECRET_KEY, database passwords, API tokens) are embedded into image files during setup.
+        - Secrets are extracted from images and then injected into Django’s settings at startup.
 ---
 
 ## Notes
 - At first, I tried reading the file line by line, thinking that would keep memory usage low since the whole file wouldn’t be loaded at once. But when I tested with a large XML file, I noticed memory usage was still pretty high. During debugging, I found that the value of the TSeq_sequence element was stored on a single line rather than being split across multiple lines. To address this, I switched to reading the file in fixed-size chunks using file.read(chunk_size), which lowered memory usage and improved processing speed.
 - It is assumed that both the input pattern and the data being searched are in uppercase. If they aren’t, then the search needs to be case‑insensitive.
+- **The .env file, and secret images have been committed to the repository for demo purposes only. This should not be done for production environments.**
 - 
 
 ---
