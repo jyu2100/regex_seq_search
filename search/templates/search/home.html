@@ -14,7 +14,11 @@
           <h2>Nucleotide Sequence Search</h1>
           <!-- Pattern textarea -->
           <textarea id="pattern" class="form-control" rows="3" cols="90" maxlength="256"
+            oninput="updateCharCount()"
             placeholder="Enter regex pattern (256 characters max)"></textarea>
+          <div class="form-text text-end">
+            <span id="charCount">0</span>/256
+          </div>
           <br>
           <label for="uid">UID</label>
           <div style="display:flex;">
@@ -104,6 +108,12 @@
         // Hide spinner
         spinnertDiv.classList.add("d-none");
       }
+    }
+
+    function updateCharCount() {
+      const textarea = document.getElementById("pattern");
+      const counter = document.getElementById("charCount");
+      counter.textContent = textarea.value.length;
     }
   </script>
 
