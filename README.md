@@ -40,7 +40,7 @@ sequence.fasta_30271926.xml is already included in the repository, however, sequ
 ---
 
 ## Initial Setup
-The following commands show how the required secret image files were originally generated. These files have already been committed to the repository for demo purposes, so you **do not need to run these commands yourself** unless you want to regenerate them. However, **do not commit secret image files in real world projects**. DNA.png in the assets folder is used as the base (input) image.
+The following commands show how the required secret image files were originally generated. These files have already been committed to the repository for demo purposes, so you **do not need to run these commands yourself** unless you want to regenerate them. However, **do not commit secret image files in real world projects**. DNA.png (from an open source repository) in the assets folder is used as the base (input) image.
 - **Embed Secrets**
    - Use the **embed_value** management command:
    ```
@@ -186,7 +186,7 @@ This project is implemented as a web application and a command line utility usin
 ---
 
 ## Design
-The design of this project emphasizes **code reusability**, ensuring both the web app and the command line utility share the same backend code. The core backend logic focuses on reading large files that do not fit in the memory and finding patterns within the data.
+The design of this project emphasizes **code reusability**, ensuring both the web app and the command line utility share the same backend code. The core backend logic focuses on reading large files that might not fit in the memory and finding patterns within the data.
 
 ### Overview
 
@@ -233,7 +233,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 - At first, I tried reading the file line by line, thinking that would keep memory usage low since the whole file wouldn’t be loaded at once. But when I tested with a large XML file, I noticed memory usage was still pretty high. During debugging, I found that the value of the TSeq_sequence element was stored on a single line rather than being split across multiple lines. To address this, I switched to reading the file in fixed-size chunks using file.read(chunk_size), which lowered memory usage and improved processing speed.
 - It is assumed that both the input pattern and the data being searched are in uppercase. If they aren’t, then the search needs to be case‑insensitive.
 - **The .env file, and secret images have been committed to the repository for demo purposes only. This should not be done for production environments.**
-- 
+- The web application and command line utilities can handle any valid UID as long as the corresponding xml file has been downloaded to the data folder and named properly beforehand.
 
 ---
 
@@ -241,7 +241,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 - Expose chunk size and overlap size as configurable parameters.
 - Handle longer input pattern length.
 - Secure the API with JWT (JSON Web Token) authentication.
-- 
+- Write unit tests
 
 ---
 
