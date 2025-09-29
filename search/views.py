@@ -11,11 +11,11 @@ def home(request):
 # API View
 class RegexSearchView(APIView):
     def get(self, request):
-        pattern_str = request.query_params.get("pattern")
+        pattern = request.query_params.get("pattern")
         uid = request.query_params.get("uid")
         
         try:
-            result = run_search(pattern_str, uid)
+            result = run_search(pattern, uid)
             return Response(result)
         except Exception as e:
             json_str = {"detail": str(e)}

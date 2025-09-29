@@ -1,13 +1,15 @@
 from collections import defaultdict
+from collections.abc import Iterator
 from django.conf import settings
 from stegano import lsb
+from typing import TextIO
 import re
 
 # CHUNK_SIZE = 1 * 1024      # 1KB chunks (For testing)
 CHUNK_SIZE = 1024 * 1024   # 1MB chunks
 OVERLAP_SIZE = 256         # overlap to avoid missing regex matches, need to handle duplicates
     
-def run_search(pattern_str, uid):
+def run_search(regex_pattern: str, uid: str) -> dict[str, list[tuple[int, int]]]:
     found_sequence_dict = defaultdict(list)
 
     file_name = f"sequence.fasta_{uid}.xml"
@@ -16,7 +18,7 @@ def run_search(pattern_str, uid):
     # Compiles the regular expression pattern as it will be used multilpe times, 
     # also assumes the pattern and searched data are all in uppercase.
     # pattern = re.compile(pattern_str, re.IGNORECASE)
-    pattern = re.compile(pattern_str)
+    pattern = re.compile(regex_pattern)
     
     with open(file_path, "r") as f:
         matches = list(stream_matches(f, pattern))
@@ -25,7 +27,7 @@ def run_search(pattern_str, uid):
 
     return found_sequence_dict
 
-def stream_matches(file_obj, pattern):
+def stream_matches(file_obj: TextIO, pattern: re.Pattern[str]) -> Iterator[tuple[str, tuple[int, int]]]:
     """
     Generator that streams regex matches from <TSeq_sequence> element.
     """
@@ -72,7 +74,7 @@ def stream_matches(file_obj, pattern):
                 yield from find_matches(chunk, pattern, offset)
                 return
 
-def find_matches(chunk, pattern, offset):
+def find_matches(chunk: str, pattern: re.Pattern[str], offset: int) -> Iterator[tuple[str, tuple[int, int]]]:
     """
     Apply regex to a text buffer and yield all matches.
     """
@@ -87,14 +89,14 @@ def find_matches(chunk, pattern, offset):
         if offset == 0 or location[1] >= offset + OVERLAP_SIZE:
             yield (matched_str, location)
 
-def embed_value(input_image, output_image, value):
+def embed_value(input_image: str, output_image: str, value: str) -> None:
     """
     Embed a string value into an image.
     """
     secret_image = lsb.hide(input_image, value)
     secret_image.save(output_image)
 
-def extract_value(image):
+def extract_value(image: str) -> str:
     """
     Extract a string value embedded in an image.
     """
