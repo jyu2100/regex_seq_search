@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from search.utils import run_search
-import json
 
 class Command(BaseCommand):
     help = "Nucleotide sequence search from the command line"
@@ -14,8 +13,7 @@ class Command(BaseCommand):
             pattern = options["pattern"]
             uid = options["uid"]
 
-            data = run_search(pattern, uid)
-            matches = json.loads(data)
+            matches = run_search(pattern, uid)
 
             for sequence in matches:
                 self.stdout.write(self.style.SUCCESS(f'{sequence}'))

@@ -1,5 +1,4 @@
 import argparse
-import json
 import requests
 import sys
 
@@ -22,8 +21,7 @@ def main():
         print(f"Error calling API: {e}")
         sys.exit(1)
 
-    data = response.json()
-    matches = json.loads(data)
+    matches = response.json()
     
     for sequence in matches:
         print(f'{sequence}')

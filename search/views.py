@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 from .utils import run_search
-import json
 
 # Front-end view
 def home(request):
@@ -15,8 +15,8 @@ class RegexSearchView(APIView):
         uid = request.query_params.get("uid")
         
         try:
-            json_str = run_search(pattern_str, uid)
-            return Response(json_str)
+            result = run_search(pattern_str, uid)
+            return Response(result)
         except Exception as e:
-            json_str = json.dumps({"error": str(e)})
-            return Response(json_str, status=400)
+            json_str = {"detail": str(e)}
+            return Response(json_str, status=status.HTTP_400_BAD_REQUEST)

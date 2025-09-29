@@ -1,7 +1,6 @@
 from collections import defaultdict
 from django.conf import settings
 from stegano import lsb
-import json
 import re
 
 # CHUNK_SIZE = 1 * 1024      # 1KB chunks (For testing)
@@ -24,8 +23,7 @@ def run_search(pattern_str, uid):
         for sequence, location in matches:
             found_sequence_dict[sequence].append(location)
 
-    json_str = json.dumps(found_sequence_dict)
-    return json_str
+    return found_sequence_dict
 
 def stream_matches(file_obj, pattern):
     """
