@@ -1,52 +1,120 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Nucleotide Sequence Search</title>
+  <title>Nucleotide Sequence Search</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
 </head>
-<body>
-    <h1>Nucleotide Sequence Search</h1>
-    <textarea id="pattern" rows="3" cols="90" maxlength="256" placeholder="Enter regex pattern (256 characters max)"></textarea>
-    <br>
-    <br>
-    <label>UID</label>
-    <br>
-    <input id="uid" value="30271926" placeholder="Enter UID">
-    <button onclick="sendPattern()">Submit</button>
-    <pre id="output"></pre>
+<body class="container my-2">
+  <div class="d-flex align-items-center mb-3">
+      <div class="mb-3">
+          <h2>Nucleotide Sequence Search</h1>
+          <!-- Pattern textarea -->
+          <textarea id="pattern" class="form-control" rows="3" cols="90" maxlength="256"
+            placeholder="Enter regex pattern (256 characters max)"></textarea>
+          <br>
+          <label for="uid">UID</label>
+          <div style="display:flex;">
+            <input type="text" id="uid" class="form-control" value="30271926" placeholder="Enter UID">
+            <button class="btn btn-primary" onclick="sendPattern()" style="margin-left: 5px;">Submit</button>
+          </div>
+      </div>
+  </div>
 
-    <script>
-        async function sendPattern() {
-            const pattern = document.getElementById('pattern').value;
-            const uid = document.getElementById('uid').value;
-            const url = `/api/sequences/?pattern=${pattern}&uid=${uid}`
-            const res = await fetch(url, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/json'}
-            });
+  <div class="mt-4">
+    <h5>Results:</h5>
 
-            let response_data = await res.json();
-            let data = JSON.parse(response_data);
+    <!-- Spinner (hidden by default) -->
+    <div id="spinner" class="d-none text-center my-3">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
 
-            if ("error" in data) {
-                outputHTML = data["error"];                
-                document.getElementById("output").innerHTML = outputHTML;
-                return;
-            }
+    <!-- Results output placeholder -->
+    <div id="output" class="d-flex flex-column gap-3"></div>
 
-            let outputHTML = "";
-            for (const [sequence, ranges] of Object.entries(data)) {
-                outputHTML += `<strong>${sequence}</strong><br>`;
-                
-                for (const [start, end] of ranges) {
-                    outputHTML += `&nbsp;&nbsp;${start}-${end}<br>`;
-                }
-                
-                outputHTML += `<br>`; // extra line break between sequences
-            }
+  </div>
 
-            document.getElementById("output").innerHTML = outputHTML;
+  <script>
+    async function sendPattern() {
+      const pattern = document.getElementById("pattern").value;
+      const uid = document.getElementById("uid").value;
+      const url = `/api/sequences/?pattern=${pattern}&uid=${uid}`;
+
+      // Show spinner
+      const spinnertDiv = document.getElementById("spinner");
+      spinnertDiv.classList.remove("d-none");
+
+      // Clear old results
+      const outputDiv = document.getElementById("output");
+      outputDiv.innerHTML = "";
+
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {"Content-Type": "application/json"}
+        });
+
+        let response_data = await res.json();
+        
+        if (res.status === 429) {
+          outputDiv.innerHTML = `<div class="alert alert-danger">HTTP Error (${res.status}): ${res.statusText} - ${response_data.detail}</div>`;
+          return;
         }
-    </script>
 
+        let data = JSON.parse(response_data);
+
+        if ("error" in data) {
+          outputDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+          return;
+        }
+
+        for (const [sequence, ranges] of Object.entries(data)) {
+          // Create a Bootstrap card for each section
+          const card = document.createElement("div");
+          card.className = "card shadow-sm";
+
+          const body = document.createElement("div");
+          body.className = "card-body";
+
+          // Title
+          const title = document.createElement("h6");
+          title.className = "card-title fw-bold";
+          title.textContent = sequence;
+          body.appendChild(title);
+
+          const scrollBox = document.createElement("div");
+          scrollBox.className = "overflow-auto border rounded p-2 bg-light";
+          scrollBox.style.maxHeight = "250px";
+
+          // Ranges list
+          const list = document.createElement("ul");
+          list.className = "list-unstyled mb-0";
+          for (const [start, end] of ranges) {
+            const li = document.createElement("li");
+            li.textContent = `${start} - ${end}`;
+            list.appendChild(li);
+          }
+          scrollBox.appendChild(list);
+          body.appendChild(scrollBox);
+
+          card.appendChild(body);
+          outputDiv.appendChild(card);
+        }
+      } catch (err) {
+        outputDiv.innerHTML = "Error fetching data";
+      } finally {
+        // Hide spinner
+        spinnertDiv.classList.add("d-none");
+      }
+    }
+  </script>
+
+  <!-- Bootstrap JS (optional) -->
+  {% comment %} <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> {% endcomment %}
 </body>
 </html>
