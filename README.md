@@ -234,6 +234,7 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 - It is assumed that both the input pattern and the data being searched are in uppercase. If they aren’t, then the search needs to be case‑insensitive.
 - **The .env file, and secret images have been committed to the repository for demo purposes only. This should not be done for production environments.**
 - The web application and command line utilities can handle any valid UID as long as the corresponding xml file has been downloaded to the data folder and named properly beforehand.
+- I considered implementing server-side pagination, since searching patterns in a large XML file could produce very large responses. However, Django REST framework’s pagination does not maintain state across requests so each subsequent page request would re-run the API logic. This is inefficient as the large file would be reprocessed for every page request. Instead, I enabled Django’s GZipMiddleware to compress responses, reducing bandwidth and transfer time. That said, it’s generally recommended to offload compression to the web server or a reverse proxy.
 
 ---
 
@@ -241,7 +242,9 @@ The design of this project emphasizes **code reusability**, ensuring both the we
 - Expose chunk size and overlap size as configurable parameters.
 - Handle longer input pattern length.
 - Secure the API with JWT (JSON Web Token) authentication.
-- Write unit tests
+- Write unit tests.
+- Refactor settings.py to support multiple environments, with one configuration for each (development, QA/Staging, and production)
+- Implement pagination on the client side.
 
 ---
 
